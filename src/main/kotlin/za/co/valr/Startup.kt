@@ -1,20 +1,22 @@
 package za.co.valr
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
-import io.vertx.ext.web.handler.BodyHandler
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import za.co.valr.model.*
 import za.co.valr.orderbook.OrderbookService
 
-
-fun main(args: Array<String>) {
-    val vertx = Vertx.vertx()
-    vertx.deployVerticle(Server(OrderbookService(CurrencyPair.BTCZAR)))
+class OrderbookEngine {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val vertx = Vertx.vertx()
+            vertx.deployVerticle(Server(OrderbookService(CurrencyPair.BTCZAR)))
+        }
+    }
 }
 
 class Server(private val orderbookService: OrderbookService) : AbstractVerticle() {

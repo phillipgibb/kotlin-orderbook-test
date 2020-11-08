@@ -7,11 +7,9 @@ import okhttp3.Request
 import okhttp3.Response
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import za.co.valr.model.*
-import za.co.valr.orderbook.OrderbookService
 import za.co.valr.utilities.signRequest
 
 class TradeHistoryTests {

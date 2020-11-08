@@ -9,7 +9,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import za.co.valr.model.*
@@ -122,7 +121,7 @@ class OrderbookServiceTests {
     fun `can get the orderbook`() = runBlockingTest {
     val orderbook = OrderbookService(CurrencyPair.BTCZAR)
         orderbook.start()
-        Assert.assertEquals(State.START, orderbook.getState())
+        Assertions.assertEquals(State.START, orderbook.getState())
         orderbook.addOrder(OrderRecord(OrderDirection.ASK, CurrencyPair.BTCZAR, OrderType.LIMIT, 10.0, 9.0, now, OrderStatus.PENDING))
         orderbook.addOrder(OrderRecord(OrderDirection.BID, CurrencyPair.BTCZAR, OrderType.LIMIT, 10.0,9.0, now, OrderStatus.PENDING))
         delay(15_000)

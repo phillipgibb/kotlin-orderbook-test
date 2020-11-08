@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import za.co.valr.model.*
 import za.co.valr.orderbook.OrderbookService
@@ -36,7 +36,7 @@ class LimitOrderTests {
 
         orderbook.setOrderBook(orders)
         orderbook.addOrder(OrderRecord(OrderDirection.BID, CurrencyPair.BTCZAR, OrderType.LIMIT, 10.0, 10.0, now, OrderStatus.PENDING))
-        Assert.assertTrue(true)
+        Assertions.assertTrue(true)
     }
 
 }

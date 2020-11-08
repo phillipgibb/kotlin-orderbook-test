@@ -1,11 +1,13 @@
 package za.co.valr.orderbook
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import co.paralleluniverse.fibers.Fiber
+import co.paralleluniverse.fibers.Suspendable
+import co.paralleluniverse.kotlin.fiber
+import co.paralleluniverse.strands.Strand
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import za.co.valr.model.*
+
 
 fun main(args: Array<String>) {
     val obs = OrderbookService(CurrencyPair.BTCZAR)
@@ -30,7 +32,7 @@ open class OrderbookService constructor(
 
     open fun start() {
         println("Starting ...")
-        GlobalScope.launch {
+        fiber @Suspendable {
             state = State.START
             pull(3000)
         }
@@ -83,7 +85,9 @@ open class OrderbookService constructor(
         return order
     }
 
-    private suspend fun changeState(state: State, delay: Long = 0, highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?, message: String? = null) {
+    private fun changeState(state: State, delay: Long = 0, highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?, message: String? = null) {
+        println("changeState from ${this.state} to $state")
+
         this.state = state
         when (this.state) {
             State.PULL -> pull(delay)
@@ -97,7 +101,7 @@ open class OrderbookService constructor(
         }
     }
 
-    private suspend fun match(highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?) {
+    private fun match(highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?) {
         println("MATCH")
 
         if (highestBidOrder!!.calculatedPrice >= lowestAskOrder!!.calculatedPrice) {
@@ -107,7 +111,7 @@ open class OrderbookService constructor(
         this.changeState(State.PULL, 5000, highestBidOrder, lowestAskOrder)
     }
 
-    private suspend fun fill(highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?) {
+    private fun fill(highestBidOrder: OrderRecord?, lowestAskOrder: OrderRecord?) {
         println("FILL")
 
         val now = DateTime.now(DateTimeZone.UTC).millis
@@ -149,13 +153,16 @@ open class OrderbookService constructor(
     }
 
     //TODO: since we only have limit orders we do not have to keep a list of current orders
-    private suspend fun pull(delay: Long) {
+    @Suspendable
+    private fun pull(delay: Long) {
+        println("Pulling (delay: $delay)...")
+
         val highestBidOrder = getBestOrder(currencyPair, OrderType.LIMIT, OrderDirection.BID)
         val lowestAskOrder = getBestOrder(currencyPair, OrderType.LIMIT, OrderDirection.ASK)
 
         //can't be a match if there is not at least a bid and an ask
         if (highestBidOrder == null || lowestAskOrder == null) {
-            delay(delay)
+            Strand.sleep(delay)
             changeState(State.PULL, delay, highestBidOrder, lowestAskOrder)
         } else {
             changeState(State.MATCH, delay, highestBidOrder, lowestAskOrder)
