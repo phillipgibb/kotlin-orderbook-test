@@ -42,7 +42,7 @@ class Server(private val orderbookService: OrderbookService) : AbstractVerticle(
             val rsp = gson.toJson(tradeHistory)
 
             context.response()
-                    .putHeader("content-type", "application/paint")
+                    .putHeader("content-type", "application/json")
                     .end(rsp)
         }
 
@@ -51,7 +51,7 @@ class Server(private val orderbookService: OrderbookService) : AbstractVerticle(
             val order = gson.fromJson(context.bodyAsString, Order::class.java)
             orderbookService.addOrder(OrderRecord(order.direction, order.currencyPair, OrderType.LIMIT, order.quantity, order.price, now, OrderStatus.PENDING))
             context.response()
-                    .putHeader("content-type", "text/paint")
+                    .putHeader("content-type", "application/json")
                     .end()
         }
 
